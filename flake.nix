@@ -31,8 +31,16 @@
           libGL
           alsa-lib
           udev
+
+          # WINIT_UNIX_BACKEND=wayland
           wayland
-        ];
+        ] ++ (with xorg; [
+          # WINIT_UNIX_BACKEND=x11
+          libXcursor
+          libXrandr
+          libXi
+          libX11
+        ]);
       in
       with pkgs; {
         # For `nix build` & `nix run`:
