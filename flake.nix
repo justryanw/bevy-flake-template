@@ -12,17 +12,62 @@
           inherit system;
         };
 
-        naersk' = pkgs.callPackage naersk {};
-        
-      in {
+        naersk' = pkgs.callPackage naersk { };
+
+      in
+      with pkgs; {
         # For `nix build` & `nix run`:
-        defaultPackage = naersk'.buildPackage {
+        defaultPackage = naersk'.buildPackage rec {
           src = ./.;
+
+          nativeBuildInputs = [
+            pkg-config
+          ];
+
+          buildInputs = [
+            libxkbcommon
+            libGL
+            alsa-lib
+            udev
+
+            # WINIT_UNIX_BACKEND=wayland
+            wayland
+
+            # WINIT_UNIX_BACKEND=x11
+            xorg.libXcursor
+            xorg.libXrandr
+            xorg.libXi
+            xorg.libX11
+          ];
+
+          LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
         };
 
         # For `nix develop` (optional, can be skipped):
-        devShell = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [ rustc cargo ];
+        devShell = pkgs.mkShell rec {
+          nativeBuildInputs = [
+            pkg-config
+            rustc
+            cargo
+          ];
+
+          buildInputs = [
+            libxkbcommon
+            libGL
+            alsa-lib
+            udev
+
+            # WINIT_UNIX_BACKEND=wayland
+            wayland
+
+            # WINIT_UNIX_BACKEND=x11
+            xorg.libXcursor
+            xorg.libXrandr
+            xorg.libXi
+            xorg.libX11
+          ];
+
+          LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
         };
       }
     );
