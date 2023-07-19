@@ -14,17 +14,11 @@
 
         naersk' = pkgs.callPackage naersk { };
 
-      in
-      with pkgs; {
-        # For `nix build` & `nix run`:
-        defaultPackage = naersk'.buildPackage rec {
-          src = ./.;
+        sharedNativeBuildInputs = (with pkgs; [
+          pkg-config
+        ]);
 
-          nativeBuildInputs = [
-            pkg-config
-          ];
-
-          buildInputs = [
+        sharedBuildInputs = (with pkgs; [
             libxkbcommon
             libGL
             alsa-lib
@@ -38,34 +32,28 @@
             xorg.libXrandr
             xorg.libXi
             xorg.libX11
-          ];
+        ]);
+
+      in with pkgs; {
+        # For `nix build` & `nix run`:
+        defaultPackage = naersk'.buildPackage rec {
+          src = ./.;
+
+          nativeBuildInputs = sharedNativeBuildInputs;
+
+          buildInputs = sharedBuildInputs;
 
           LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
         };
 
         # For `nix develop` (optional, can be skipped):
         devShell = pkgs.mkShell rec {
-          nativeBuildInputs = [
-            pkg-config
+          nativeBuildInputs = sharedNativeBuildInputs ++ [
             rustc
             cargo
           ];
 
-          buildInputs = [
-            libxkbcommon
-            libGL
-            alsa-lib
-            udev
-
-            # WINIT_UNIX_BACKEND=wayland
-            wayland
-
-            # WINIT_UNIX_BACKEND=x11
-            xorg.libXcursor
-            xorg.libXrandr
-            xorg.libXi
-            xorg.libX11
-          ];
+          buildInputs = sharedBuildInputs;
 
           LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
         };
