@@ -53,9 +53,9 @@
           LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
         };
 
-        # For `nix develop` (optional, can be skipped):
+        # For `nix develop`
         devShell = pkgs.mkShell rec {
-          # fix for rust-analyzer in vscode
+          # Fix for rust-analyzer in vscode
           RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
 
           nativeBuildInputs = sharedNativeBuildInputs ++ [ rustToolchain ];
