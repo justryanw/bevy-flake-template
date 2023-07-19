@@ -1,13 +1,15 @@
 {
   inputs = {
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-parts.url = "github:hercules-ci/flake-parts";
     rust-overlay.url = "github:oxalica/rust-overlay";
     naersk-src.url = "github:nix-community/naersk";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = { self, flake-utils, rust-overlay, naersk-src, nixpkgs }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs = inputs @ { nixpkgs, flake-parts, rust-overlay, naersk-src, ... }: flake-parts.lib.mkFlake { inherit inputs; } {
+    systems = [ "x86_64-linux" "aarch64-linux" ];
+    perSystem = { pkgs, system, ... }:
+      with pkgs;
       let
         overlays = [
           (import rust-overlay)
@@ -22,30 +24,19 @@
 
         naersk = pkgs.callPackage naersk-src { };
 
-        sharedNativeBuildInputs = (with pkgs; [
-          pkg-config
-        ]);
+        sharedNativeBuildInputs = [ pkg-config ];
 
-        sharedBuildInputs = (with pkgs; [
+        sharedBuildInputs = [
           libxkbcommon
           libGL
           alsa-lib
           udev
-
-          # WINIT_UNIX_BACKEND=wayland
           wayland
-
-          # WINIT_UNIX_BACKEND=x11
-          xorg.libXcursor
-          xorg.libXrandr
-          xorg.libXi
-          xorg.libX11
-        ]);
-
+        ];
       in
       with pkgs; {
         # For `nix build` & `nix run`:
-        defaultPackage = naersk.buildPackage rec {
+        packages.default = naersk.buildPackage rec {
           src = ./.;
 
           nativeBuildInputs = sharedNativeBuildInputs;
@@ -54,7 +45,7 @@
         };
 
         # For `nix develop`
-        devShell = pkgs.mkShell rec {
+        devShells.default = pkgs.mkShell rec {
           # Fix for rust-analyzer in vscode
           RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
 
@@ -62,6 +53,6 @@
           buildInputs = sharedBuildInputs;
           LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
         };
-      }
-    );
+      };
+  };
 }
