@@ -28,11 +28,9 @@
 
         sharedBuildInputs = [
           libxkbcommon
-          libGL
           alsa-lib
           udev
           vulkan-loader
-          vulkan-headers
 
           # WINIT_UNIX_BACKEND=wayland
           wayland
