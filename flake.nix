@@ -1,18 +1,18 @@
 {
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
-    naersk.url = "github:nix-community/naersk";
+    naersk-src.url = "github:nix-community/naersk";
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
-  outputs = { self, flake-utils, naersk, nixpkgs }:
+  outputs = { self, flake-utils, naersk-src, nixpkgs }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = (import nixpkgs) {
           inherit system;
         };
 
-        naersk' = pkgs.callPackage naersk { };
+        naersk = pkgs.callPackage naersk-src { };
 
         sharedNativeBuildInputs = (with pkgs; [
           pkg-config
@@ -36,7 +36,7 @@
 
       in with pkgs; {
         # For `nix build` & `nix run`:
-        defaultPackage = naersk'.buildPackage rec {
+        defaultPackage = naersk.buildPackage rec {
           src = ./.;
 
           nativeBuildInputs = sharedNativeBuildInputs;
