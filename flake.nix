@@ -9,10 +9,12 @@
   outputs = { self, flake-utils, rust-overlay, naersk-src, nixpkgs }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        overlays = [ (import rust-overlay) 
-        (self: super: {
-          rustToolchain = super.rust-bin.stable.latest.default;
-        })];
+        overlays = [
+          (import rust-overlay)
+          (self: super: {
+            rustToolchain = super.rust-bin.stable.latest.default;
+          })
+        ];
 
         pkgs = (import nixpkgs) {
           inherit system overlays;
@@ -47,20 +49,17 @@
           src = ./.;
 
           nativeBuildInputs = sharedNativeBuildInputs;
-
           buildInputs = sharedBuildInputs;
-
           LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
         };
 
         # For `nix develop` (optional, can be skipped):
         devShell = pkgs.mkShell rec {
-          nativeBuildInputs = sharedNativeBuildInputs ++ [
-            rustToolchain
-          ];
+          # fix for rust-analyzer in vscode
+          RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
 
+          nativeBuildInputs = sharedNativeBuildInputs ++ [ rustToolchain ];
           buildInputs = sharedBuildInputs;
-
           LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
         };
       }
