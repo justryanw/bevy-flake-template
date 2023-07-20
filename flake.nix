@@ -42,6 +42,7 @@
 
           # WINIT_UNIX_BACKEND=wayland
           wayland
+          egl-wayland
         ] ++ (with xorg; [
           # WINIT_UNIX_BACKEND=x11
           libXcursor
