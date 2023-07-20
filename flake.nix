@@ -33,6 +33,8 @@
           libxkbcommon
           alsa-lib
           alsa-plugins
+          alsa-utils
+          alsa-tools
           udev
           libGL
           vulkan-loader
