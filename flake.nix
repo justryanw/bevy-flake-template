@@ -32,7 +32,7 @@
         runtimeDeps = [
           libxkbcommon
           alsa-lib
-          pipewire
+          pipewire.lib
           udev
           vulkan-loader
 
