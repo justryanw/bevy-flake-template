@@ -298,7 +298,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy-nix"
+name = "bevy-flake-template"
 version = "0.1.0"
 dependencies = [
  "bevy",

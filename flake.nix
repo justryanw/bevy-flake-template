@@ -11,8 +11,6 @@
     perSystem = { pkgs, system, ... }:
       with pkgs;
       let
-        programName = "bevy-nix";
-
         overlays = [
           (import rust-overlay)
           (self: super: {
@@ -52,7 +50,8 @@
       in
       with pkgs; {
         # For `nix build` & `nix run`:
-        packages.default = naersk.buildPackage {
+        packages.default = naersk.buildPackage rec {
+          pname = "bevy-flake-template";
           src = ./.;
 
           nativeBuildInputs = buildDeps;
@@ -60,7 +59,7 @@
 
           overrideMain = attrs: {
             fixupPhase = ''
-              wrapProgram $out/bin/${programName} \
+              wrapProgram $out/bin/${pname} \
                 --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath runtimeDeps} \
                 --prefix XCURSOR_THEME : "Adwaita"
               mkdir -p $out/bin/assets
