@@ -35,8 +35,10 @@
           pipewire
           udev
           libGL
+          vulkan-tools
           vulkan-loader
           vulkan-headers
+          vulkan-validation-layers
 
           # WINIT_UNIX_BACKEND=wayland
           wayland
