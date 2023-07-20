@@ -34,22 +34,16 @@
           alsa-lib
           pipewire
           udev
-          libGL
-          vulkan-tools
           vulkan-loader
-          vulkan-headers
-          vulkan-validation-layers
 
           # WINIT_UNIX_BACKEND=wayland
           wayland
-          egl-wayland
         ] ++ (with xorg; [
           # WINIT_UNIX_BACKEND=x11
           libXcursor
           libXrandr
           libXi
           libX11
-          libxcb
         ]);
       in
       with pkgs; {
@@ -66,8 +60,7 @@
               wrapProgram $out/bin/${pname} \
                 --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath runtimeDeps} \
                 --prefix XCURSOR_THEME : "Adwaita" \
-                --prefix ALSA_PLUGIN_DIR : ${pipewire.lib}/lib/alsa-lib \
-                --prefix WINIT_UNIX_BACKEND : "x11"
+                --prefix ALSA_PLUGIN_DIR : ${pipewire.lib}/lib/alsa-lib
               mkdir -p $out/bin/assets
               cp -a assets $out/bin'';
           };
