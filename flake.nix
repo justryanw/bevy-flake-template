@@ -32,10 +32,7 @@
         runtimeDeps = [
           libxkbcommon
           alsa-lib
-          alsa-plugins
-          alsa-utils
-          alsa-tools
-          libpulseaudio
+          pipewire
           udev
           libGL
           vulkan-loader
