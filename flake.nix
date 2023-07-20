@@ -63,7 +63,6 @@
               wrapProgram $out/bin/${pname} \
                 --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath runtimeDeps} \
                 --prefix XCURSOR_THEME : "Adwaita" \
-                --prefix ALSA_PLUGIN_DIR : ${alsa-lib}/lib/alsa-lib
               mkdir -p $out/bin/assets
               cp -a assets $out/bin'';
           };
