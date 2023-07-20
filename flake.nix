@@ -32,6 +32,7 @@
         runtimeDeps = [
           libxkbcommon
           alsa-lib
+          alsa-plugins
           udev
           libGL
           vulkan-loader
