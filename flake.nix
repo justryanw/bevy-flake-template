@@ -11,6 +11,8 @@
     perSystem = { pkgs, system, ... }:
       with pkgs;
       let
+        programName = "bevy-nix";
+
         overlays = [
           (import rust-overlay)
           (self: super: {
@@ -24,13 +26,18 @@
 
         naersk = pkgs.callPackage naersk-src { };
 
-        sharedNativeBuildInputs = [ pkg-config ];
+        buildDeps = [ 
+          pkg-config
+          makeWrapper
+        ];
 
-        sharedBuildInputs = [
+        runtimeDeps = [
           libxkbcommon
           alsa-lib
           udev
+          libGL
           vulkan-loader
+          vulkan-headers
 
           # WINIT_UNIX_BACKEND=wayland
           wayland
@@ -40,26 +47,37 @@
           libXrandr
           libXi
           libX11
+          libxcb
         ]);
       in
       with pkgs; {
         # For `nix build` & `nix run`:
-        packages.default = naersk.buildPackage rec {
+        packages.default = naersk.buildPackage {
           src = ./.;
 
-          nativeBuildInputs = sharedNativeBuildInputs;
-          buildInputs = sharedBuildInputs;
-          LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
+          nativeBuildInputs = buildDeps;
+          buildInputs = runtimeDeps;
+
+          overrideMain = attrs: {
+            fixupPhase = ''
+              wrapProgram $out/bin/${programName} \
+                --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath runtimeDeps} \
+                --prefix XCURSOR_THEME : "Adwaita"
+              mkdir -p $out/bin/assets
+              cp -a assets $out/bin'';
+          };
         };
 
         # For `nix develop`
-        devShells.default = pkgs.mkShell rec {
+        devShells.default = pkgs.mkShell {
           # Fix for rust-analyzer in vscode
           RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
 
-          nativeBuildInputs = sharedNativeBuildInputs ++ [ rustToolchain ];
-          buildInputs = sharedBuildInputs;
-          LD_LIBRARY_PATH = "${lib.makeLibraryPath buildInputs}";
+          nativeBuildInputs = buildDeps ++ [ rustToolchain ];
+          buildInputs = runtimeDeps;
+
+          LD_LIBRARY_PATH = "${lib.makeLibraryPath runtimeDeps}";
+          XCURSOR_THEME = "Adwaita";
         };
       };
   };
