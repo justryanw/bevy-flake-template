@@ -67,7 +67,7 @@
                 --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath runtimeDeps} \
                 --prefix XCURSOR_THEME : "Adwaita" \
                 --prefix ALSA_PLUGIN_DIR : ${pipewire.lib}/lib/alsa-lib \
-                --prefix WINIT_UNIX_BACKEND : "wayland"
+                --prefix WINIT_UNIX_BACKEND : "x11"
               mkdir -p $out/bin/assets
               cp -a assets $out/bin'';
           };
