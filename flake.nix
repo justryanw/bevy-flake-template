@@ -35,6 +35,7 @@
           alsa-plugins
           alsa-utils
           alsa-tools
+          libpulseaudio
           udev
           libGL
           vulkan-loader
