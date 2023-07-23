@@ -16,14 +16,14 @@
           inherit system overlays;
         };
 
-        rustToolchain = pkgs.rust-bin.stable.latest.default;
+        rustStable = pkgs.rust-bin.stable.latest.default;
 
-        naersk = pkgs.callPackage naersk-src { 
-          cargo = rustToolchain;
-          rustc = rustToolchain;
+        naersk = pkgs.callPackage naersk-src {
+          cargo = rustStable;
+          rustc = rustStable;
         };
 
-        buildDeps = [ 
+        buildDeps = [
           pkg-config
           makeWrapper
           clang
@@ -46,10 +46,8 @@
           libXi
           libX11
         ]);
-      in
-      with pkgs; {
-        # For `nix build` & `nix run`:
-        packages.dev = naersk.buildPackage rec {
+
+        commonConfig = rec {
           pname = "bevy-flake-template";
           src = ./.;
 
@@ -65,27 +63,21 @@
               mkdir -p $out/bin/assets
               cp -a assets $out/bin'';
           };
-
-          release = false;
         };
+      in
+      with pkgs; rec {
 
-        packages.default =  naersk.buildPackage rec {
-          pname = "bevy-flake-template";
-          src = ./.;
-
-          nativeBuildInputs = buildDeps;
-          buildInputs = runtimeDeps;
-
-          overrideMain = attrs: {
-            fixupPhase = ''
-              wrapProgram $out/bin/${pname} \
-                --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath runtimeDeps} \
-                --prefix XCURSOR_THEME : "Adwaita" \
-                --prefix ALSA_PLUGIN_DIR : ${pipewire.lib}/lib/alsa-lib
-              mkdir -p $out/bin/assets
-              cp -a assets $out/bin'';
+        packages = {
+          # `nix run .#dev`:
+          dev = naersk.buildPackage commonConfig // {
+            release = false;
           };
 
+          # `nix run .#release`:
+          release = naersk.buildPackage commonConfig;
+
+          # `nix run`:
+          default = packages.release;
         };
 
         # For `nix develop`
@@ -93,7 +85,7 @@
           # Fix for rust-analyzer in vscode
           RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
 
-          nativeBuildInputs = buildDeps ++ [ rustToolchain ];
+          nativeBuildInputs = buildDeps ++ [ rustStable ];
           buildInputs = runtimeDeps;
 
           LD_LIBRARY_PATH = "${lib.makeLibraryPath runtimeDeps}";
