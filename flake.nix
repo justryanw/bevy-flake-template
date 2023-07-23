@@ -57,8 +57,6 @@
           overrideMain = attrs: {
             fixupPhase = ''
               wrapProgram $out/bin/${pname} \
-                --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath runtimeDeps} \
-                --prefix AMD_VULKAN_ICD : "RADV" \
                 --prefix XCURSOR_THEME : "Adwaita" \
                 --prefix ALSA_PLUGIN_DIR : ${pipewire.lib}/lib/alsa-lib
               mkdir -p $out/bin/assets
@@ -67,7 +65,7 @@
 
             postFixup = ''
               patchelf $out/bin/.${pname}-wrapped \
-              --add-rpath ${lib.makeLibraryPath (runtimeDeps ++ [ vulkan-headers vulkan-tools vulkan-validation-layers vulkan-extension-layer ])}
+              --add-rpath ${lib.makeLibraryPath [ vulkan-loader ]}
             '';
           };
         };
