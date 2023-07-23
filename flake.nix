@@ -64,7 +64,7 @@
               cp -a assets $out/bin
             '';
 
-            postFixup = lib.optionalString stdenv.isLinux ''
+            postFixup = ''
               patchelf $out/bin/.${pname}-wrapped \
               --add-rpath ${lib.makeLibraryPath (runtimeDeps ++ [ vulkan-headers vulkan-tools vulkan-validation-layers vulkan-extension-layer ])}
             '';
