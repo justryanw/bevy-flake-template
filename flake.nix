@@ -63,6 +63,11 @@
               mkdir -p $out/bin/assets
               cp -a assets $out/bin
             '';
+
+            postFixup = lib.optionalString stdenv.isLinux ''
+              patchelf $out/bin/.${pname}-wrapped \
+              --add-rpath ${lib.makeLibraryPath [ vulkan-loader ]}
+            '';
           };
         };
       in
