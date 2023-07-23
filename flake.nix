@@ -66,7 +66,7 @@
 
             postFixup = lib.optionalString stdenv.isLinux ''
               patchelf $out/bin/.${pname}-wrapped \
-              --add-rpath ${lib.makeLibraryPath [ vulkan-loader ]}
+              --add-rpath ${lib.makeLibraryPath runtimeDeps}
             '';
           };
         };
