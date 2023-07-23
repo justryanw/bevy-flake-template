@@ -65,7 +65,7 @@
 
             postFixup = ''
               patchelf $out/bin/.${pname}-wrapped \
-              --add-rpath ${lib.makeLibraryPath [ runtimeDeps ]}
+              --add-rpath ${lib.makeLibraryPath runtimeDeps }
             '';
           };
         };
