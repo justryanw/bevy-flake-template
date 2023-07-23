@@ -61,12 +61,12 @@
                 --prefix XCURSOR_THEME : "Adwaita" \
                 --prefix ALSA_PLUGIN_DIR : ${pipewire.lib}/lib/alsa-lib
               mkdir -p $out/bin/assets
-              cp -a assets $out/bin'';
+              cp -a assets $out/bin
+            '';
           };
         };
       in
-      with pkgs; rec {
-
+      rec {
         packages = {
           # `nix run .#dev`:
           dev = naersk.buildPackage commonConfig // {
