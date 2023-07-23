@@ -35,7 +35,7 @@
           alsa-lib
           pipewire.lib
           udev
-          vulkan-loader
+          # vulkan-loader
 
           # WINIT_UNIX_BACKEND=wayland
           wayland
