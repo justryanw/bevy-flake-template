@@ -47,7 +47,7 @@
           libX11
         ]);
 
-        commonConfig = rec {
+        sharedAttrs = rec {
           pname = "bevy-flake-template";
           src = ./.;
 
@@ -69,12 +69,12 @@
       rec {
         packages = {
           # `nix run .#dev`:
-          dev = naersk.buildPackage commonConfig // {
+          dev = naersk.buildPackage sharedAttrs // {
             release = false;
           };
 
           # `nix run .#release`:
-          release = naersk.buildPackage commonConfig;
+          release = naersk.buildPackage sharedAttrs;
 
           # `nix run`:
           default = packages.release;
