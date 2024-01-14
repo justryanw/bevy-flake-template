@@ -33,7 +33,6 @@
         runtimeDeps = [
           libxkbcommon
           alsa-lib
-          pipewire.lib
           udev
           vulkan-loader
 
@@ -58,8 +57,7 @@
             fixupPhase = ''
               wrapProgram $out/bin/${pname} \
                 --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath runtimeDeps} \
-                --prefix XCURSOR_THEME : "Adwaita" \
-                --prefix ALSA_PLUGIN_DIR : ${pipewire.lib}/lib/alsa-lib
+                --prefix XCURSOR_THEME : "Adwaita"
               mkdir -p $out/bin/assets
               cp -a assets $out/bin
             '';
