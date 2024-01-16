@@ -5,7 +5,7 @@ Simple flake template for the Bevy game engine using Naersk.
 
 Running without cloning
 ```bash
-nix run github:justryanw/bevy-nix-template
+nix run github:justryanw/bevy-flake-template
 ```
 
 Build with nix
