@@ -6,7 +6,7 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { nixpkgs, crane, flake-utils, ... }:
+  outputs = { self, nixpkgs, crane, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -32,9 +32,9 @@
           libX11
         ]));
 
-        sharedAttrs = rec {
+        my-crate = craneLib.buildPackage rec {
           pname = "bevy-flake-template";
-          src = pkgs.lib.cleanSource ./.;
+          src = ./.;
 
           nativeBuildInputs = buildDeps;
           buildInputs = runtimeDeps;
@@ -49,6 +49,18 @@
         };
       in
       {
-        packages.default = craneLib.buildPackage sharedAttrs // { };
+        checks = {
+          inherit my-crate;
+        };
+
+        packages.default = my-crate;
+
+        devShells.default = craneLib.devShell {
+          checks = self.checks.${system};
+
+          RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+          LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath runtimeDeps}";
+          XCURSOR_THEME = "Adwaita";
+        };
       });
 }
