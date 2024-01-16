@@ -3,15 +3,21 @@ Simple flake template for the Bevy game engine using Naersk.
 
 ### Usage
 
+Running without cloning
+```bash
+nix run github:justryanw/bevy-nix-template
+```
+
 Build with nix
 ```bash
+# Clone and cd into repo
 nix build
-nix run
+# Or
+nix run # Runs client in release mode by default
 ```
 
 Use dev or release profiles
 ```bash
-nix run # Runs in release mode by default
 nix run .#dev
 nix run .#release
 ```
@@ -19,12 +25,14 @@ nix run .#release
 or enter dev environment and build using cargo
 ```bash
 nix develop -c $SHELL # Use direnv to do this automatically
-cargo build
 cargo run
 ```
 
 ### Issues / Limitations
 
-- Doesn't work on non NixOS systems currently since Bevy can't find the gpu, not sure why and I'm still looking into a fix for this.
+- Workaround needed for multiple binaries (e.g. client/server), look at the [multiple-binaries](https://github.com/justryanw/bevy-flake-template/tree/multiple-binaries) branch
 - Not setup for MacOS yet.
-- Still trying to figure out how to get multiple binaries to work.
+- NixGL is needed to run on non NixOS systems
+```bash
+nix run --impure github:guibou/nixGL -- nix run
+```

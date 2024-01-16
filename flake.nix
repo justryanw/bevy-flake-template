@@ -35,11 +35,8 @@
           alsa-lib
           udev
           vulkan-loader
-
-          # WINIT_UNIX_BACKEND=wayland
           wayland
         ] ++ (with xorg; [
-          # WINIT_UNIX_BACKEND=x11
           libXcursor
           libXrandr
           libXi
@@ -63,22 +60,17 @@
             '';
           };
         };
+
+        devAttrs = { release = false; };
       in
       rec {
         packages = {
-          # `nix run .#dev`:
-          dev = naersk.buildPackage sharedAttrs // {
-            release = false;
-          };
-
-          # `nix run .#release`:
+          dev = naersk.buildPackage sharedAttrs // devAttrs;
           release = naersk.buildPackage sharedAttrs;
 
-          # `nix run`:
           default = packages.release;
         };
 
-        # For `nix develop`
         devShells.default = pkgs.mkShell {
           # Fix for rust-analyzer in vscode
           RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
