@@ -34,7 +34,7 @@
 
         sharedAttrs = rec {
           pname = "bevy-flake-template";
-          src = ./.;
+          src = pkgs.lib.cleanSource ./.;
 
           nativeBuildInputs = buildDeps;
           buildInputs = runtimeDeps;
