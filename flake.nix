@@ -6,7 +6,7 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, crane, flake-utils, ... }:
+  outputs = { nixpkgs, crane, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -34,7 +34,7 @@
 
         sharedAttrs = rec {
           pname = "bevy-flake-template";
-          src = craneLib.cleanCargoSource (craneLib.path ./.);
+          src = ./.;
 
           nativeBuildInputs = buildDeps;
           buildInputs = runtimeDeps;
