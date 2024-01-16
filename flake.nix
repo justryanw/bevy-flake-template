@@ -46,9 +46,11 @@
           libX11
         ]);
 
-        sharedAttrs = rec {
-          pname = "bevy-flake-template";
+        sharedAttrs = { pname }: rec {
+          inherit pname;
           src = ./.;
+
+          copyBinsFilter = ''select(.reason == "compiler-artifact" and .executable != null and .profile.test == false and .target.name == "${pname}")'';
 
           nativeBuildInputs = buildDeps;
           buildInputs = runtimeDeps;
@@ -63,19 +65,21 @@
             '';
           };
         };
+
+        clientAttrs = sharedAttrs { pname = "client"; };
+        serverAttrs = sharedAttrs { pname = "server"; };
+
+        devAttrs = { release = false; };
       in
       rec {
         packages = {
-          # `nix run .#dev`:
-          dev = naersk.buildPackage sharedAttrs // {
-            release = false;
-          };
+          clientDev = naersk.buildPackage (clientAttrs // devAttrs);
+          serverDev = naersk.buildPackage (serverAttrs // devAttrs);
 
-          # `nix run .#release`:
-          release = naersk.buildPackage sharedAttrs;
+          client = naersk.buildPackage clientAttrs;
+          server = naersk.buildPackage serverAttrs;
 
-          # `nix run`:
-          default = packages.release;
+          default = packages.client;
         };
 
         # For `nix develop`
