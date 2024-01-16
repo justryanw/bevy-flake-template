@@ -1,12 +1,15 @@
 {
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     rust-overlay.url = "github:oxalica/rust-overlay";
-    naersk-src.url = "github:nix-community/naersk";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    crane = {
+      url = "github:ipetkov/crane";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs @ { nixpkgs, flake-parts, rust-overlay, naersk-src, ... }: flake-parts.lib.mkFlake { inherit inputs; } {
+  outputs = inputs @ { nixpkgs, flake-parts, rust-overlay, crane, ... }: flake-parts.lib.mkFlake { inherit inputs; } {
     systems = [ "x86_64-linux" "aarch64-linux" ];
     perSystem = { pkgs, system, ... }:
       with pkgs;
@@ -18,10 +21,7 @@
 
         rustStable = pkgs.rust-bin.stable.latest.default;
 
-        naersk = pkgs.callPackage naersk-src {
-          cargo = rustStable;
-          rustc = rustStable;
-        };
+        craneLib = crane.lib.${system};
 
         buildDeps = [
           pkg-config
@@ -44,8 +44,8 @@
         ]);
 
         sharedAttrs = rec {
-          pname = "bevy-flake-template";
-          src = ./.;
+          # pname = "bevy-flake-template";
+          src = craneLib.cleanCargoSource (craneLib.path ./.);
 
           nativeBuildInputs = buildDeps;
           buildInputs = runtimeDeps;
@@ -65,8 +65,8 @@
       in
       rec {
         packages = {
-          dev = naersk.buildPackage sharedAttrs // devAttrs;
-          release = naersk.buildPackage sharedAttrs;
+          dev = craneLib.buildPackage sharedAttrs // devAttrs;
+          release = craneLib.buildPackage sharedAttrs;
 
           default = packages.release;
         };
