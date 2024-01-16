@@ -3,6 +3,11 @@ name = "bevy-flake-template"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "client"
+path = "src/client/bin/main.rs"
+
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [profile.dev]
@@ -12,4 +17,8 @@ opt-level = 1
 opt-level = 3
 
 [dependencies]
-bevy = { version = "0.12", features = [ "wayland" ] }
+bevy = { version = "0.12.0", features = [ "wayland" ] }
+
+[[bin]]
+name = "server"
+path = "src/server/bin/main.rs"
