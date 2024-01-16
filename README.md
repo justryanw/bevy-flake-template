@@ -1,5 +1,5 @@
 # Bevy Flake Template
-Simple flake template for the Bevy game engine using Naersk.
+Simple flake template for the Bevy game engine using [Crane](https://github.com/ipetkov/crane).
 
 ### Usage
 
@@ -30,7 +30,6 @@ cargo run
 
 ### Issues / Limitations
 
-- Workaround needed for multiple binaries (e.g. client/server), look at the [multiple-binaries](https://github.com/justryanw/bevy-flake-template/tree/multiple-binaries) branch
 - Not setup for MacOS yet.
 - NixGL is needed to run on non NixOS systems
 ```bash
