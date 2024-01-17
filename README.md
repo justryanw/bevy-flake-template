@@ -13,13 +13,7 @@ Build with nix
 # Clone and cd into repo
 nix build
 # Or
-nix run # Runs client in release mode by default
-```
-
-Use dev or release profiles
-```bash
-nix run .#dev
-nix run .#release
+nix run
 ```
 
 or enter dev environment and build using cargo
@@ -30,7 +24,7 @@ cargo run
 
 ### Issues / Limitations
 
-- Not setup for MacOS yet.
+- Not tested on MacOS.
 - NixGL is needed to run on non NixOS systems
 ```bash
 nix run --impure github:guibou/nixGL -- nix run
