@@ -10,4 +10,4 @@ opt-level = 1
 opt-level = 3
 
 [dependencies]
-bevy = { version = "0.12", features = [ "wayland" ] }
+# bevy = { version = "0.12", features = [ "wayland" ] }
