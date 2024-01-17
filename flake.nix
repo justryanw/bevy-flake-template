@@ -16,6 +16,17 @@
         rustPkgs = pkgs.rustBuilder.makePackageSet {
           rustVersion = "1.75.0";
           packageFun = import ./Cargo.nix;
+
+          packageOverrides = pkgs: pkgs.rustBuilder.overrides.all ++ [
+            (pkgs.rustBuilder.rustLib.makeOverride {
+              name = "alsa-sys";
+              overrideAttrs = drv: {
+                propagatedBuildInputs = drv.propagatedBuildInputs or [ ] ++ [
+                  pkgs.alsa-lib
+                ];
+              };
+            })
+          ];
         };
 
         buildDeps = (with pkgs; [
