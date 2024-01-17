@@ -18,10 +18,41 @@
           packageFun = import ./Cargo.nix;
         };
 
+        buildDeps = (with pkgs; [
+          pkg-config
+          makeWrapper
+          clang
+          mold
+        ]);
+
+        runtimeDeps = (with pkgs; [
+          libxkbcommon
+          alsa-lib
+          udev
+          vulkan-loader
+          wayland
+        ] ++ (with xorg; [
+          libXcursor
+          libXrandr
+          libXi
+          libX11
+        ]));
+
+        workspaceShell = rustPkgs.workspaceShell {
+          packages = [ cargo2nix.packages."${system}".cargo2nix ];
+
+          nativeBuildInputs = buildDeps;
+          buildInputs = runtimeDeps;
+
+          RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+          LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath runtimeDeps}";
+          XCURSOR_THEME = "Adwaita";
+        };
       in
       rec {
+        devShell = workspaceShell;
+
         packages = {
-          # replace hello-world with your package name
           bevy-flake-template = (rustPkgs.workspace.bevy-flake-template { });
           default = packages.bevy-flake-template;
         };
