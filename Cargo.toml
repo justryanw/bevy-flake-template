@@ -2,6 +2,7 @@
 name = "bevy-flake-template"
 version = "0.1.0"
 edition = "2021"
+default-run = "bevy-flake-template"
 
 [profile.dev]
 opt-level = 1
@@ -11,3 +12,7 @@ opt-level = 3
 
 [dependencies]
 bevy = { version = "0.12", features = [ "wayland" ] }
+
+[[bin]]
+name="copy"
+path="src/bin/copy.rs"
