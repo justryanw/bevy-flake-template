@@ -32,8 +32,8 @@
           libX11
         ]));
 
-        my-crate = craneLib.buildPackage rec {
-          pname = "bevy-flake-template";
+        bevy-bin = { pname }: {
+          inherit pname;
           src = ./.;
 
           nativeBuildInputs = buildDeps;
@@ -48,21 +48,8 @@
           '';
         };
 
-        my-crate-copy = craneLib.buildPackage rec {
-          pname = "copy";
-          src = ./.;
-
-          nativeBuildInputs = buildDeps;
-          buildInputs = runtimeDeps;
-
-          postInstall = ''
-            wrapProgram $out/bin/${pname} \
-              --prefix LD_LIBRARY_PATH : ${pkgs.lib.makeLibraryPath runtimeDeps} \
-              --prefix XCURSOR_THEME : "Adwaita"
-            mkdir -p $out/bin/assets
-            cp -a assets $out/bin
-          '';
-        };
+        my-crate = craneLib.buildPackage (bevy-bin { pname = "bevy-flake-template"; });
+        my-crate-copy = craneLib.buildPackage (bevy-bin { pname = "copy"; });
 
       in
       {
@@ -72,7 +59,6 @@
 
         packages = { 
           default = my-crate;
-
           copy = my-crate-copy;
         };
 
