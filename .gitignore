@@ -1,0 +1,5 @@
+/target
+/result
+/.direnv
+/.tile_cache
+/dist
