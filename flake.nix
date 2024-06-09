@@ -123,7 +123,7 @@
 
         packages.default = my-app;
 
-        apps.default = flake-utils.lib.mkApp {
+        apps.serve = flake-utils.lib.mkApp {
           drv = serve-app;
         };
 
