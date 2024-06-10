@@ -6,10 +6,8 @@ fn main() {
         .insert_resource(AssetMetaCheck::Never)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy game".to_string(), // ToDo
-                // Bind to canvas included in `index.html`
+                title: "Bevy GIS".to_string(),
                 canvas: Some("#bevy".to_owned()),
-                // Tells wasm not to override default event handling, like F5 and Ctrl+R
                 prevent_default_event_handling: false,
                 ..default()
             }),
@@ -20,14 +18,9 @@ fn main() {
         .run();
 }
 
-fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-) {
-    // Camera
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     commands.spawn(Camera2dBundle::default());
 
-    // Sprite
     commands.spawn(SpriteBundle {
         texture: asset_server.load("bevy.png"),
         ..default()
