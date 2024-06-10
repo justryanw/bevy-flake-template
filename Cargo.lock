@@ -296,7 +296,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy-gis"
+name = "bevy-flake-template"
 version = "0.1.0"
 dependencies = [
  "bevy",

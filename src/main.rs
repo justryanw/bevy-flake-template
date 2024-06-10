@@ -6,7 +6,7 @@ fn main() {
         .insert_resource(AssetMetaCheck::Never)
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Bevy GIS".to_string(),
+                title: "Bevy Flake Template".to_string(),
                 canvas: Some("#bevy".to_owned()),
                 prevent_default_event_handling: false,
                 ..default()
