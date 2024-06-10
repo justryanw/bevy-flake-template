@@ -24,3 +24,4 @@ trunk serve
 ### Issues / Limitations
 
 - Not tested on MacOS.
+- Github pages broke (WIP) https://justryanw.github.io/bevy-flake-template/
