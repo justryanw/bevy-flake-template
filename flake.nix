@@ -5,7 +5,7 @@
     nixpkgs.follows = "cargo2nix/nixpkgs";
   };
 
-  outputs = inputs: with inputs;
+  outputs = { nixpkgs, flake-utils, cargo2nix, ...}:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
