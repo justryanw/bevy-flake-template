@@ -29,3 +29,4 @@ cargo run
 ```bash
 nix run --impure github:guibou/nixGL -- nix run
 ```
+- Bevy 0.14 segfaults with amdvlk installed on the system (not sure if its NixOS specific)
