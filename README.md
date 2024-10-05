@@ -5,7 +5,7 @@ Simple flake template for the Bevy game engine using [Crane](https://github.com/
 
 Running without cloning
 ```bash
-nix run github:justryanw/bevy-flake-template
+nix run github:justryanw/bevy-flake-template/crane
 ```
 
 Build with nix
