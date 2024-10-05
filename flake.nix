@@ -1,75 +1,92 @@
 {
-  description = "Rust-Nix";
-
   inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
       inputs.nixpkgs-lib.follows = "nixpkgs";
     };
-    rust-overlay.url = "github:oxalica/rust-overlay";
-    crate2nix.url = "github:nix-community/crate2nix";
 
-    # Development
-
-    devshell = {
-      url = "github:numtide/devshell";
+    crate2nix = {
+      url = "github:nix-community/crate2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
-  nixConfig = {
-    extra-trusted-public-keys = "eigenvalue.cachix.org-1:ykerQDDa55PGxU25CETy9wF6uVDpadGGXYrFNJA3TUs=";
-    extra-substituters = "https://eigenvalue.cachix.org";
-    allow-import-from-derivation = true;
-  };
+  outputs = inputs @ { flake-parts, crate2nix, ... }: flake-parts.lib.mkFlake { inherit inputs; } {
+    systems = [
+      "x86_64-linux"
+      "aarch64-linux"
+      "x86_64-darwin"
+      "aarch64-darwin"
+    ];
 
-  outputs =
-    inputs @ { self
-    , nixpkgs
-    , flake-parts
-    , rust-overlay
-    , crate2nix
-    , ...
-    }: flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "x86_64-darwin"
-        "aarch64-darwin"
-      ];
+    perSystem = { system, pkgs, lib, ... }:
+      let
+        buildInputs = (with pkgs; [
+          libxkbcommon
+          alsa-lib
+          udev
+          vulkan-loader
+          wayland
+        ] ++ (with xorg; [
+          libXcursor
+          libXrandr
+          libXi
+          libX11
+        ]));
 
-      imports = [
-        ./nix/rust-overlay/flake-module.nix
-        ./nix/devshell/flake-module.nix
-      ];
+        name = "bevy-flake-template";
 
-      perSystem = { system, pkgs, lib, inputs', ... }:
-        let
-          # If you dislike IFD, you can also generate it with `crate2nix generate` 
-          # on each dependency change and import it here with `import ./Cargo.nix`.
-          cargoNix = inputs.crate2nix.tools.${system}.appliedCargoNix {
-            name = "bevy-flake-template";
+        cargoNix = pkgs.callPackage
+          (crate2nix.tools.${system}.generatedCargoNix {
+            inherit name;
             src = ./.;
-          };
-        in
-        rec {
-          checks = {
-            bevy-flake-template = cargoNix.rootCrate.build.override {
-              runTests = true;
+          })
+          {
+            defaultCrateOverrides = pkgs.defaultCrateOverrides // {
+              wayland-sys = atts: {
+                nativeBuildInputs = with pkgs; [ pkg-config ];
+                buildInputs = with pkgs; [ wayland ];
+              };
+
+              ${name} = attrs: {
+                name = "${name}-${attrs.version}";
+
+                nativeBuildInputs = [ pkgs.makeWrapper ];
+
+                postInstall = ''
+                  wrapProgram $out/bin/${name} \
+                    --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath buildInputs} \
+                    --prefix XCURSOR_THEME : "Adwaita"
+                  mkdir -p $out/bin/assets
+                  cp -a assets $out/bin
+                '';
+              };
             };
           };
-
-          packages = {
-            bevy-flake-template = cargoNix.rootCrate.build;
-            default = packages.bevy-flake-template;
-
-            inherit (pkgs) rust-toolchain;
-
-            rust-toolchain-versions = pkgs.writeScriptBin "rust-toolchain-versions" ''
-              ${pkgs.rust-toolchain}/bin/cargo --version
-              ${pkgs.rust-toolchain}/bin/rustc --version
-            '';
-          };
+      in
+      {
+        packages = {
+          default = cargoNix.rootCrate.build;
         };
-    };
+
+        devShells.default = pkgs.mkShell {
+          buildInputs = buildInputs ++ (with pkgs; [
+            cargo
+            rustc
+            pkg-config
+            rustfmt
+            clang
+            mold
+            cargo-watch
+            nix-output-monitor
+          ]);
+
+          RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+          LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath buildInputs}";
+          XCURSOR_THEME = "Adwaita";
+        };
+      };
+  };
 }
