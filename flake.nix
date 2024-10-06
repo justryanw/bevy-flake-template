@@ -99,7 +99,7 @@
           cargoNixDev = cargoNix { release = false; };
 
         in
-        {
+        rec {
           packages = {
             default = cargoNixRelease.rootCrate.build;
 
@@ -148,6 +148,10 @@
                 mold
                 cargo-watch
                 nix-output-monitor
+                (writeScriptBin "rundev" ''
+                  ${nix-output-monitor}/bin/nom build .#dev;
+                  nix run .#dev
+                '')
               ]);
 
             RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";

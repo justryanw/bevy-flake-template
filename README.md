@@ -22,6 +22,8 @@ Build with Nix.
 nix develop -c $SHELL # Enter dev shell (if you dont have nom installed)
 nom build .#dev # Nice build output ( can be skipped )
 nix run .#dev
+# Or use alias for nom build and run
+rundev
 ```
 
 or enter dev environment and build using Cargo.
