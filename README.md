@@ -18,12 +18,9 @@ nix run github:justryanw/bevy-flake-template
 Build with Nix.
 ```bash
 # Clone and cd into repo
-nix build
-# Or
-nix run
-# Or
-nix develop -c $SHELL # Enter dev shell
+nix develop -c $SHELL # Enter dev shell (if you dont have nom installed)
 nom build # Nicer build output
+nix run
 ```
 
 or enter dev environment and build using Cargo.

@@ -1,4 +1,11 @@
 {
+  nixConfig = {
+    # Replace with your own cachix or binary cache server.
+    extra-trusted-public-keys = "justryanw.cachix.org-1:oan1YuatPBqGNFEflzCmB+iwLPtzq1S1LivN3hUzu60=";
+    extra-substituters = "https://justryanw.cachix.org";
+    allow-import-from-derivation = true;
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
@@ -38,13 +45,8 @@
 
         name = "bevy-flake-template";
 
-        cargoNix = pkgs.callPackage
-          (crate2nix.tools.${system}.generatedCargoNix {
-            inherit name;
-            src = ./.;
-          })
-          {
-            defaultCrateOverrides = pkgs.defaultCrateOverrides // {
+
+        crateOverrides = pkgs.defaultCrateOverrides // {
               wayland-sys = atts: {
                 nativeBuildInputs = with pkgs; [ pkg-config ];
                 buildInputs = with pkgs; [ wayland ];
@@ -53,7 +55,7 @@
               ${name} = attrs: {
                 name = "${name}-${attrs.version}";
 
-                nativeBuildInputs = [ pkgs.makeWrapper ];
+                nativeBuildInputs = with pkgs; [ makeWrapper mold ];
 
                 postInstall = ''
                   wrapProgram $out/bin/${name} \
@@ -64,11 +66,50 @@
                 '';
               };
             };
-          };
+
+
+        cargoNix = pkgs.callPackage
+          (crate2nix.tools.${system}.generatedCargoNix {
+            inherit name;
+            src = ./.;
+          })
+          {
+            release = false;
+            defaultCrateOverrides = crateOverrides;
+        };
+
+        
+
       in
       {
         packages = {
-          default = cargoNix.rootCrate.build;
+          default = cargoNix.rootCrate.build.override {
+            crateOverrides = crateOverrides // (
+                  builtins.listToAttrs
+      (builtins.map
+        (crate:
+          let
+            crateName = crate.crateName;
+            defaultOverride = crateOverrides.${crateName} or (crate: { });
+                opt1 = ["-C opt-level=1"];
+                opt3 = ["-C opt-level=3"];
+          in
+          {
+            name = crateName;
+            value = crate: (
+              let defaultOverrideApplied = defaultOverride crate;
+              opt = if crateName == name then opt3 else opt1;
+              in
+              defaultOverrideApplied // {
+                extraRustcOpts = (defaultOverrideApplied.extraRustcOpts or [ ]) ++ opt;
+                extraRustcOptsForBuildRs = (defaultOverrideApplied.extraRustcOptsForBuildRs or [ ]) ++ opt;
+              }
+            );
+          }
+        )
+        (builtins.attrValues cargoNix.internal.crates))
+            );
+          };
         };
 
         devShells.default = pkgs.mkShell {
