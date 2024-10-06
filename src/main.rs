@@ -13,7 +13,6 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
     // Camera
     commands.spawn(Camera2dBundle::default());
 
-
     // Sprite
     commands.spawn(SpriteBundle {
         texture: asset_server.load("bevy.png"),

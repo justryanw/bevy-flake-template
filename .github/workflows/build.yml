@@ -33,5 +33,7 @@ jobs:
         uses: DeterminateSystems/flake-checker-action@main
         with:
           fail-mode: true
-      - name: Build
+      - name: Build Dev
+        run: nix build --accept-flake-config .#dev
+      - name: Build Release
         run: nix build --accept-flake-config
