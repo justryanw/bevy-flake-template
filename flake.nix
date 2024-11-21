@@ -99,7 +99,7 @@
           cargoNixDev = cargoNix { release = false; };
 
         in
-        rec {
+        {
           packages = {
             default = cargoNixRelease.rootCrate.build;
 
