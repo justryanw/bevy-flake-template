@@ -38,7 +38,7 @@ jobs:
           nix build \
             --print-build-logs \
             --builders "" \
-            --max-jobs 2 \
+            --max-jobs 100 \
             --eval-store auto \
             --store ssh-ng://eu.nixbuild.net \
             --accept-flake-config \
