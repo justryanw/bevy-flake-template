@@ -35,7 +35,7 @@ cargo run
 ### Issues / Limitations
 
 - Not tested on MacOS.
-- The way setting the opt levels for the dev profile is implemented is pretty hacky, theres probably a better way to do it.
+- The way setting the opt levels for the dev profile is implemented is pretty hacky, there's probably a better way to do it.
 - NixGL is needed to run using Nix on non NixOS systems.
 ```bash
 nix run --impure github:guibou/nixGL -- nix run
