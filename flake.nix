@@ -147,6 +147,7 @@
                 clang
                 mold
                 cargo-watch
+                cargo-edit
                 nix-output-monitor
                 (writeScriptBin "rundev" ''
                   ${nix-output-monitor}/bin/nom build .#dev;
