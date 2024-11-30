@@ -40,4 +40,3 @@ cargo run
 ```bash
 nix run --impure github:guibou/nixGL -- nix run
 ```
-
