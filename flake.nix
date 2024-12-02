@@ -1,8 +1,8 @@
 {
   nixConfig = {
     # Replace with your own cachix or binary cache server.
-    # extra-trusted-public-keys = "justryanw.cachix.org-1:oan1YuatPBqGNFEflzCmB+iwLPtzq1S1LivN3hUzu60=";
-    # extra-substituters = "https://justryanw.cachix.org";
+    extra-trusted-public-keys = "justryanw.cachix.org-1:oan1YuatPBqGNFEflzCmB+iwLPtzq1S1LivN3hUzu60=";
+    extra-substituters = "https://justryanw.cachix.org";
     allow-import-from-derivation = true;
   };
 

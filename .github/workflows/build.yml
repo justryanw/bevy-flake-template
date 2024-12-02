@@ -43,4 +43,5 @@ jobs:
             --eval-store auto \
             --store ssh-ng://eu.nixbuild.net \
             --accept-flake-config \
-            .
+            . \
+            .#dev
