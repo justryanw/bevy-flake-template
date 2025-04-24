@@ -20,9 +20,12 @@
     };
   };
 
-  outputs =
-    { flake-parts, crate2nix, ... }@inputs:
-    flake-parts.lib.mkFlake { inherit inputs; } {
+  outputs = {
+    flake-parts,
+    crate2nix,
+    ...
+  } @ inputs:
+    flake-parts.lib.mkFlake {inherit inputs;} {
       systems = [
         "x86_64-linux"
         "aarch64-linux"
@@ -30,39 +33,41 @@
         "aarch64-darwin"
       ];
 
-      perSystem =
-        {
-          pkgs,
-          lib,
-          system,
-          ...
-        }:
-        let
-          systemDeps =
-            builtins.attrValues {
-              inherit (pkgs)
-                libxkbcommon
-                alsa-lib
-                udev
-                vulkan-loader
-                wayland
-                ;
-            }
-            ++ builtins.attrValues {
-              inherit (pkgs.xorg)
-                libXcursor
-                libXrandr
-                libXi
-                libX11
-                ;
-            };
+      perSystem = {
+        pkgs,
+        lib,
+        system,
+        ...
+      }: let
+        systemDeps =
+          builtins.attrValues {
+            inherit
+              (pkgs)
+              libxkbcommon
+              alsa-lib
+              udev
+              vulkan-loader
+              wayland
+              ;
+          }
+          ++ builtins.attrValues {
+            inherit
+              (pkgs.xorg)
+              libXcursor
+              libXrandr
+              libXi
+              libX11
+              ;
+          };
 
-          name = "bevy-flake-template";
+        name = "bevy-flake-template";
 
-          crateOverrides = pkgs.defaultCrateOverrides // {
+        crateOverrides =
+          pkgs.defaultCrateOverrides
+          // {
             wayland-sys = atts: {
-              nativeBuildInputs = [ pkgs.pkg-config ];
-              buildInputs = [ pkgs.wayland ];
+              nativeBuildInputs = [pkgs.pkg-config];
+              buildInputs = [pkgs.wayland];
             };
 
             ${name} = attrs: {
@@ -82,42 +87,42 @@
             };
           };
 
-          cargoNix =
-            pkgs.callPackage
-              (crate2nix.tools.${system}.generatedCargoNix {
-                inherit name;
-                src = ./.;
-              })
-              {
-                defaultCrateOverrides = crateOverrides;
-              };
-        in
-        {
-          packages = {
-            default = cargoNix.rootCrate.build;
+        cargoNix =
+          pkgs.callPackage
+          (crate2nix.tools.${system}.generatedCargoNix {
+            inherit name;
+            src = ./.;
+          })
+          {
+            defaultCrateOverrides = crateOverrides;
           };
-
-          devShells.default = pkgs.mkShell {
-            buildInputs =
-              systemDeps
-              ++ builtins.attrValues {
-                inherit (pkgs)
-                  cargo
-                  rustc
-                  pkg-config
-                  rustfmt
-                  clang
-                  mold
-                  cargo-watch
-                  cargo-edit
-                  nix-output-monitor
-                  ;
-              };
-
-            RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
-            LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath systemDeps}";
-            XCURSOR_THEME = "Adwaita";
-          };
+      in {
+        packages = {
+          default = cargoNix.rootCrate.build;
         };
+
+        devShells.default = pkgs.mkShell {
+          buildInputs =
+            systemDeps
+            ++ builtins.attrValues {
+              inherit
+                (pkgs)
+                cargo
+                rustc
+                pkg-config
+                rustfmt
+                clang
+                mold
+                cargo-watch
+                cargo-edit
+                nix-output-monitor
+                ;
+            };
+
+          RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+          LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath systemDeps}";
+          XCURSOR_THEME = "Adwaita";
+        };
+      };
     };
 }
