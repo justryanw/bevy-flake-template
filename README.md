@@ -6,7 +6,6 @@ Simple Nix Flake template for the Bevy game engine using [Crate2Nix](https://git
 - Uploads built crates to a binary cache server during CI/CD.
 - Local builds will pull crates from the cache server meaning the same crate doesn't need to built more than once.
 - Dev shell with everything needed to build using Cargo.
-- Wayland support.
 
 ## Usage
 
