@@ -1,5 +1,3 @@
-use std::f32;
-
 use bevy::{asset::AssetMetaCheck, prelude::*};
 
 fn main() {
