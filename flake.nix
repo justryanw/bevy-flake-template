@@ -116,6 +116,8 @@
                 cargo-watch
                 cargo-edit
                 nix-output-monitor
+                trunk
+                lld
                 ;
             };
 
