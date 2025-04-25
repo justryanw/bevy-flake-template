@@ -12,12 +12,6 @@ fn main() {
                         title: "Bevy Flake Template".to_string(),
                         canvas: Some("#bevy".to_owned()),
                         prevent_default_event_handling: false,
-                        resize_constraints: WindowResizeConstraints {
-                            min_width: 0.,
-                            min_height: 0.,
-                            max_width: f32::INFINITY,
-                            max_height: f32::INFINITY,
-                        },
                         ..default()
                     }),
                     ..default()
