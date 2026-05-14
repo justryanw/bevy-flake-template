@@ -39,26 +39,17 @@
         system,
         ...
       }: let
-        systemDeps =
-          builtins.attrValues {
-            inherit
-              (pkgs)
-              libxkbcommon
-              alsa-lib
-              udev
-              vulkan-loader
-              wayland
-              ;
-          }
-          ++ builtins.attrValues {
-            inherit
-              (pkgs.xorg)
-              libXcursor
-              libXrandr
-              libXi
-              libX11
-              ;
-          };
+        systemDeps = with pkgs; [
+          libxkbcommon
+          alsa-lib
+          udev
+          vulkan-loader
+          wayland
+          libXcursor
+          libXrandr
+          libXi
+          libX11
+        ];
 
         name = "bevy-flake-template";
 
@@ -73,14 +64,11 @@
             ${name} = attrs: {
               name = "${name}-${attrs.version}";
 
-              nativeBuildInputs = builtins.attrValues {
-                inherit (pkgs) makeWrapper mold;
-              };
+              nativeBuildInputs = with pkgs; [makeWrapper mold];
 
               postInstall = ''
                 wrapProgram $out/bin/${name} \
-                  --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath systemDeps} \
-                  --prefix XCURSOR_THEME : "Adwaita"
+                  --prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath systemDeps}
                 mkdir -p $out/bin/assets
                 cp -a assets $out/bin
               '';
@@ -104,26 +92,22 @@
         devShells.default = pkgs.mkShell {
           buildInputs =
             systemDeps
-            ++ builtins.attrValues {
-              inherit
-                (pkgs)
-                cargo
-                rustc
-                pkg-config
-                rustfmt
-                clang
-                mold
-                cargo-watch
-                cargo-edit
-                nix-output-monitor
-                trunk
-                lld
-                ;
-            };
+            ++ (with pkgs; [
+              cargo
+              rustc
+              pkg-config
+              rustfmt
+              clang
+              mold
+              cargo-watch
+              cargo-edit
+              nix-output-monitor
+              trunk
+              lld
+            ]);
 
           RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
           LD_LIBRARY_PATH = "${pkgs.lib.makeLibraryPath systemDeps}";
-          XCURSOR_THEME = "Adwaita";
         };
       };
     };
